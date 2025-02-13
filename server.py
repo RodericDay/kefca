@@ -20,16 +20,19 @@ async def get_kafka_producer():
 
 # Kafka Consumer (Background Task)
 async def consume_messages():
+    await asyncio.sleep(3)
     consumer = AIOKafkaConsumer(
         KAFKA_TOPIC,
         bootstrap_servers=KAFKA_BROKER,
-        value_deserializer=lambda v: json.loads(v.decode("utf-8"))
+        value_deserializer=lambda v: json.loads(v.decode("utf-8")),
     )
+    print('Starting...')
     await consumer.start()
     try:
         async for msg in consumer:
             print(f"Consumed message: {msg.value}")  # Just print messages for now
     finally:
+        print('Stopped.')
         await consumer.stop()
 
 @app.on_event("startup")
